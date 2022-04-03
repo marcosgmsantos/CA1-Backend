@@ -64,3 +64,29 @@ exports.findOne = (req, res) => {
         .send({ message: "Error retrieving Entry with id=" + id });
     });
 };
+
+// Update a Entry by the id in the request
+exports.update = (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
+  }
+
+  const id = req.params.id;
+
+  Entry.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update Entry with id=${id}. Maybe Entry was not found!`
+        });
+      } else res.send({ message: "Entry was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Entry with id=" + id
+      });
+    });
+};
+
