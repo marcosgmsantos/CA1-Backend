@@ -29,3 +29,38 @@ exports.create = (req, res) => {
       });
     });
 };
+
+
+// Retrieve all Entrys from the database.
+exports.findAll = (req, res) => {
+  const title = req.query.title;
+  var condition = title ? { title: { $regex: new RegExp(title), $options: "i" } } : {};
+
+  Entry.find(condition)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving Entrys."
+      });
+    });
+};
+
+// Find a single Entry with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  Entry.findById(id)
+    .then(data => {
+      if (!data)
+        res.status(404).send({ message: "Not found Entry with id " + id });
+      else res.send(data);
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .send({ message: "Error retrieving Entry with id=" + id });
+    });
+};
