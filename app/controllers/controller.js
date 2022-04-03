@@ -90,3 +90,57 @@ exports.update = (req, res) => {
     });
 };
 
+
+// Delete a Entry with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  Entry.findByIdAndRemove(id, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot delete Entry with id=${id}. Maybe Entry was not found!`
+        });
+      } else {
+        res.send({
+          message: "Entry was deleted successfully!"
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete Entry with id=" + id
+      });
+    });
+};
+
+// Delete all Entrys from the database.
+exports.deleteAll = (req, res) => {
+  Entry.deleteMany({})
+    .then(data => {
+      res.send({
+        message: `${data.deletedCount} Entrys were deleted successfully!`
+      });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all Entrys."
+      });
+    });
+};
+
+// Find all published Entrys
+exports.findAllPublished = (req, res) => {
+  Entry.find({ published: true })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving Entrys."
+      });
+    });
+};
+
